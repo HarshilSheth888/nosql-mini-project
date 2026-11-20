@@ -9,43 +9,39 @@
 
 **Prepared and Submitted by:**
 
-| USN | NAME IN CAPITAL | SIGNATURE |
-| :--- | :--- | :--- |
-| [YOUR USN 1] | [STUDENT NAME 1] | _____________ |
-| [YOUR USN 2] | [STUDENT NAME 2] | _____________ |
-| [YOUR USN 3] | [STUDENT NAME 3] | _____________ |
+| USN | NAME |
+| :--- | :--- |
+| 25MCAR0225 | HARSHIL SHETH |
 
-**Date of Submission:** ____________________  
-**Faculty Signature:** ____________________  
 
 ---
 
 ## TABLE OF CONTENTS
 
-| Sl. No. | Content | Page No |
-| :--- | :--- | :--- |
-| **1** | **Introduction** | |
-| | 1.1 Purpose of the Project | |
-| | 1.2 Target Audience | |
-| **2** | **Concept and Objectives** | |
-| | 2.1 Problem Statement | |
-| | 2.2 Objectives | |
-| **3** | **System Requirements** | |
-| | 3.1 Software Requirements | |
-| | 3.2 Hardware Requirements | |
-| | 3.3 Dependencies and Tools | |
-| **4** | **Implementation Details** | |
-| | 4.1 Schema | |
-| | 4.2 MongoDB Queries | |
+| Sl. No. | Content |
+| :--- | :--- |
+| **1** | **Introduction** |
+| | 1.1 Purpose of the Project |
+| | 1.2 Target Audience |
+| **2** | **Concept and Objectives** |
+| | 2.1 Problem Statement |
+| | 2.2 Objectives |
+| **3** | **System Requirements** |
+| | 3.1 Software Requirements |
+| | 3.2 Hardware Requirements |
+| | 3.3 Dependencies and Tools |
+| **4** | **Implementation Details** |
+| | 4.1 Schema |
+| | 4.2 MongoDB Queries |
 | | 4.3 Screenshots | |
-| **5** | **Challenges and Solutions** | |
-| | 5.1 Technical Challenges | |
-| | 5.2 Design Challenges | |
-| | 5.3 How Issues Were Resolved | |
-| **6** | **Conclusion** | |
-| **7** | **References** | |
-| | 7.1 Book References | |
-| | 7.2 Web References | |
+| **5** | **Challenges and Solutions** |
+| | 5.1 Technical Challenges |
+| | 5.2 Design Challenges |
+| | 5.3 How Issues Were Resolved |
+| **6** | **Conclusion** |
+| **7** | **References** |
+| | 7.1 Book References |
+| | 7.2 Web References |
 
 ---
 
@@ -89,7 +85,8 @@ The key technical and academic objectives of this mini project are:
 ### 3.1 Software Requirements
 - **Operating System:** Microsoft Windows 10/11, Ubuntu Linux 20.04+, or macOS Sonoma
 - **Database Engine:** MongoDB Community Server (v6.0 or higher) / MongoDB Atlas
-- **Database GUI Client:** MongoDB Compass (v1.40 or higher) / MongoDB Shell (`mongosh`)
+- **Database Connection URI:** `mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.12.0`
+- **Database GUI Client:** MongoDB Compass (v1.40 or higher) / MongoDB Shell (`mongosh` v2.12+)
 - **Backend Framework:** Python 3.10+ / Flask 3.0+
 - **Driver / ODM:** PyMongo 4.6+
 - **Frontend Technologies:** HTML5, CSS3, JavaScript (ES6), Bootstrap 5.3, Bootstrap Icons
@@ -125,8 +122,8 @@ Stores food items, categories, pricing, and availability flags.
   "price": 349.0,
   "description": "Fragrant basmati rice layered with spiced chicken and aromatic herbs",
   "is_available": true,
-  "image_url": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400",
-  "created_at": ISODate("2026-11-16T13:30:00.000Z")
+  "image_url": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600",
+  "created_at": ISODate("2026-11-20T18:00:00.000Z")
 }
 ```
 
@@ -139,7 +136,7 @@ Maintains customer profile records updated dynamically during checkout using ups
   "phone": "9876543210",
   "name": "Rahul Verma",
   "address": "Flat 304, Green Heights, Bengaluru",
-  "last_order_at": ISODate("2026-11-16T13:45:00.000Z")
+  "last_order_at": ISODate("2026-11-20T18:05:00.000Z")
 }
 ```
 
@@ -170,7 +167,7 @@ Demonstrates document embedding. Each order contains an embedded array of subdoc
   ],
   "total_amount": 797.0,
   "status": "Pending",
-  "ordered_at": ISODate("2026-11-16T13:45:00.000Z")
+  "ordered_at": ISODate("2026-11-20T18:05:00.000Z")
 }
 ```
 
@@ -274,6 +271,17 @@ pipeline = [
 popular_items = list(db.orders.aggregate(pipeline))
 ```
 
+*Figure 8. Code Snippet for Backend Order List Sanitization*
+```python
+# Code 8: Guard against missing or malformed items attributes
+raw_orders = list(db.orders.find().sort("ordered_at", -1).limit(20))
+orders = []
+for ord_doc in raw_orders:
+    if "items" not in ord_doc or not isinstance(ord_doc["items"], list):
+        ord_doc["items"] = []
+    orders.append(ord_doc)
+```
+
 ---
 
 ### 4.3 Screenshots
@@ -288,8 +296,8 @@ Illustrates client-side item selection, dynamic subtotal calculations, and addre
 *Fig 3. Order Confirmation and Receipt Generation (Code 4)*  
 Shows the generated unique BSON `_id` order invoice along with detailed itemized breakdown and timestamp.
 
-*Fig 4. Admin Management Dashboard and Statistics (Code 6a, Code 7)*  
-Displays real-time metric counters (Total Menu Items, Total Orders, Customer Count, Pending Orders) and table listings for menu item modifications.
+*Fig 4. Admin Management Dashboard and Statistics (Code 6a, Code 7, Code 8)*  
+Displays real-time metric counters (Total Menu Items, Total Orders, Customer Count, Pending Orders) and table listings for menu item modifications and order status updates.
 
 *Fig 5. MongoDB Compass Document Viewer (Code 1, Code 4)*  
 Visualizes the native JSON documents stored in `restaurant_db` across collections, highlighting nested BSON types and embedded arrays.
@@ -301,7 +309,9 @@ Visualizes the native JSON documents stored in `restaurant_db` across collection
 ### 5.1 Technical Challenges
 *(a) BSON ObjectId Handling in Web Views:* MongoDB produces non-string `ObjectId` types for document identifiers (`_id`). Direct serialization into HTML templates or JSON APIs produced `TypeError: Object of type ObjectId is not JSON serializable`.  
 *(b) Embedded Document Calculation vs. Redundancy:* Balancing whether line items inside orders should reference menu items by ID or embed name and price snapshots to safeguard historical billing integrity against future menu price updates.  
-*(c) Analytical Computation Over Nested Arrays:* Extracting metrics (e.g., top selling dishes) across orders where items are embedded inside variable-length arrays.
+*(c) Analytical Computation Over Nested Arrays:* Extracting metrics (e.g., top selling dishes) across orders where items are embedded inside variable-length arrays.  
+*(d) Jinja2 Attribute Collision with Python Dictionary Methods:* When rendering orders in the admin dashboard, accessing `order.items` caused Jinja2 to bind to Python's built-in `dict.items()` method whenever a document lacked an `"items"` array or was incomplete, throwing `TypeError: object of type 'builtin_function_or_method' has no len()`.  
+*(e) Local MongoDB Connection Resolution:* Connecting with standard `mongodb://localhost:27017/` occasionally encountered DNS / IPv6 timeout latency issues (`127.0.0.1` vs `::1`) in modern local runtime environments and standalone `mongosh` shells.
 
 ### 5.2 Design Challenges
 *(a) Schema Normalization vs. Denormalization Tradeoff:* Designing collections to minimize read latency for customer-facing views while maintaining clean customer and menu catalogs.  
@@ -310,7 +320,9 @@ Visualizes the native JSON documents stored in `restaurant_db` across collection
 ### 5.3 How Issues Were Resolved
 *(a) Explicit ObjectId Casting & Jinja Conversions:* Applied explicit Python `str(ObjectId)` and `ObjectId(id_str)` sanitization across all routing parameters and aggregation steps.  
 *(b) Snapshot Embedding Pattern:* Adopted the snapshot schema design pattern. Historical orders embed the exact price and name at time-of-purchase, while retaining the referenced `item_id` for traceability.  
-*(c) MongoDB Aggregation Framework:* Solved nested array querying using the `$unwind` operator, which deconstructs the `items` array from each order document to generate individual documents for each element, allowing seamless `$group` and `$sum` operations.
+*(c) MongoDB Aggregation Framework:* Solved nested array querying using the `$unwind` operator, which deconstructs the `items` array from each order document to generate individual documents for each element, allowing seamless `$group` and `$sum` operations.  
+*(d) Defensive Backend Data Sanitization & Template Type Guards:* Resolved the Jinja2 collision by: (1) sanitizing all order documents in `app.py` before template rendering to ensure `"items"` is always guaranteed to be a Python list, and (2) updating Jinja2 templates (`admin.html` and `order_detail.html`) to access `order['items']` using dictionary bracket notation along with type checking (`is iterable and is not mapping`).  
+*(e) Direct Connection String Configuration:* Updated the MongoDB connection string to explicitly target `127.0.0.1` with `directConnection=true` and `serverSelectionTimeoutMS=2000`, matching `mongosh 2.12.0` client parameters for instantaneous connection establishment without topology discovery overhead.
 
 ---
 
@@ -321,7 +333,8 @@ Key outcomes accomplished during this project include:
 1. Designing scalable BSON schemas that naturally represent real-world restaurant operations.
 2. Delivering comprehensive CRUD functionality coupled with upsert semantics and regex search capabilities.
 3. Exploiting MongoDB’s Aggregation Pipeline to generate instant operational and sales insights.
-4. Integrating a clean, production-ready Python Flask web interface that interacts seamlessly with MongoDB via PyMongo.
+4. Implementing resilient backend validation and defensive template guards to avoid runtime dictionary-method collisions.
+5. Integrating a clean, production-ready Python Flask web interface that interacts seamlessly with MongoDB via PyMongo.
 
 The project demonstrates how NoSQL databases reduce developmental complexity, eliminate schema migration friction, and support modern, data-intensive web applications.
 
