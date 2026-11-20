@@ -31,12 +31,61 @@ customer_collection = db["customers"]
 # ═══════════════════════════════════════════════════════════════════════
 
 def seed_menu():
-    """Seed the menu with sample data or ensure items are refreshed."""
-    # Correct broken Gulab Jamun image if already seeded
-    menu_collection.update_many(
-        {"name": "Gulab Jamun", "image_url": {"$regex": "photo-1666190050288"}},
-        {"$set": {"image_url": "https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?w=600"}}
-    )
+    """Seed the menu with sample data or ensure items are refreshed with authentic images."""
+    
+    # Accurate, permanent, authentic food imagery verified across items
+    menu_images = {
+        # Starters
+        "Crispy Paneer Tikka": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Paneer_tikka.jpg",
+        "Smoky BBQ Chicken Wings": "https://upload.wikimedia.org/wikipedia/commons/e/ee/Chicken_wings_as_food.jpg",
+        "Caesar Salad": "https://upload.wikimedia.org/wikipedia/commons/2/23/Caesar_salad_%282%29.jpg",
+        "Garlic Bread Supreme": "https://upload.wikimedia.org/wikipedia/commons/5/59/Garlicbread.jpg",
+        "Crispy Golden Spring Rolls": "https://upload.wikimedia.org/wikipedia/commons/2/24/Spring_Rolls_2.jpg",
+        "Loaded Fiesta Nachos": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Nachos.jpg",
+        
+        # Pizza
+        "Classic Margherita Pizza": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Pizza_Margherita_stu_spivack.jpg",
+        "Rustic Farmhouse Pizza": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Vegetarian_Pizza.jpg",
+        "Spicy Pepperoni Feast": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Pepperoni_pizza.jpg",
+        "Smoked BBQ Chicken Pizza": "https://upload.wikimedia.org/wikipedia/commons/e/e8/B.B.Q._Chicken_Pizza_%2826679384893%29.jpg",
+        
+        # Main Course
+        "Hyderabadi Chicken Biryani": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Chicken_Biryani.jpg",
+        "Royal Butter Chicken": "https://upload.wikimedia.org/wikipedia/commons/1/19/Butter-chicken.jpg",
+        "Paneer Butter Masala": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Paneer_Butter_Masala.jpg",
+        "Slow-Cooked Dal Makhani": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Dal_Makhani.jpg",
+        "Veg Schezwan Fried Rice": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Fried_rice.jpg",
+        "Truffle Wild Mushroom Risotto": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Mushroom_Risotto_%284789415965%29.jpg",
+        
+        # Desserts
+        "Gulab Jamun (2 Pcs)": "https://upload.wikimedia.org/wikipedia/commons/5/56/Gulab_Jamun.jpg",
+        "Molten Chocolate Brownie": "https://upload.wikimedia.org/wikipedia/commons/6/68/Chocolatebrownie.JPG",
+        "Classic Venetian Tiramisu": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Tiramisu_dessert.jpg",
+        "Kesar Pista Rasmalai": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Ras-Malai.jpg",
+        
+        # Beverages
+        "Alphonso Mango Lassi": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Mango_Lassi_.jpg",
+        "Artisanal Cold Coffee": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Ice_coffee_image.jpg",
+        "Sparkling Mint Lime Soda": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Lime_Soda_preparation.jpg",
+        "Kulhad Masala Chai": "https://upload.wikimedia.org/wikipedia/commons/0/04/Masala_Chai.JPG",
+
+        # Legacy aliases (if seeded under earlier names)
+        "Margherita Pizza": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Pizza_Margherita_stu_spivack.jpg",
+        "Chicken Biryani": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Chicken_Biryani.jpg",
+        "Chocolate Brownie": "https://upload.wikimedia.org/wikipedia/commons/6/68/Chocolatebrownie.JPG",
+        "Mango Lassi": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Mango_Lassi_.jpg",
+        "Garlic Bread": "https://upload.wikimedia.org/wikipedia/commons/5/59/Garlicbread.jpg",
+        "Veg Fried Rice": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Fried_rice.jpg",
+        "Cold Coffee": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Ice_coffee_image.jpg",
+        "Gulab Jamun": "https://upload.wikimedia.org/wikipedia/commons/5/56/Gulab_Jamun.jpg",
+    }
+
+    # Automatically refresh existing documents in MongoDB with the correct authentic URLs
+    for dish_name, img_link in menu_images.items():
+        menu_collection.update_many(
+            {"name": dish_name},
+            {"$set": {"image_url": img_link}}
+        )
 
     sample_items = [
         # --- Starters ---
@@ -46,7 +95,7 @@ def seed_menu():
             "price": 249.0,
             "description": "Char-grilled cottage cheese cubes marinated in spiced yogurt and kasuri methi",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Paneer_tikka.jpg",
             "created_at": datetime.now()
         },
         {
@@ -55,7 +104,7 @@ def seed_menu():
             "price": 289.0,
             "description": "Crispy chicken wings glazed in artisanal hickory BBQ glaze with garlic dip",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/ee/Chicken_wings_as_food.jpg",
             "created_at": datetime.now()
         },
         {
@@ -64,7 +113,7 @@ def seed_menu():
             "price": 199.0,
             "description": "Crisp romaine lettuce with shaved parmesan, herbed croutons, and creamy Caesar dressing",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/23/Caesar_salad_%282%29.jpg",
             "created_at": datetime.now()
         },
         {
@@ -73,7 +122,7 @@ def seed_menu():
             "price": 149.0,
             "description": "Artisan toasted baguette topped with herb butter, roasted garlic, and melted mozzarella",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1619535860434-ba1d8fa12536?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/59/Garlicbread.jpg",
             "created_at": datetime.now()
         },
         {
@@ -82,7 +131,7 @@ def seed_menu():
             "price": 189.0,
             "description": "Wok-tossed julienne vegetables encased in crispy pastry with sweet chili dip",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Spring_Rolls_2.jpg",
             "created_at": datetime.now()
         },
         {
@@ -91,7 +140,7 @@ def seed_menu():
             "price": 229.0,
             "description": "Corn tortilla chips loaded with jalapeños, molten cheddar, salsa, and sour cream",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Nachos.jpg",
             "created_at": datetime.now()
         },
 
@@ -102,7 +151,7 @@ def seed_menu():
             "price": 299.0,
             "description": "San Marzano tomato base, fresh buffalo mozzarella, aromatic basil, and olive oil drizzle",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Pizza_Margherita_stu_spivack.jpg",
             "created_at": datetime.now()
         },
         {
@@ -111,7 +160,7 @@ def seed_menu():
             "price": 349.0,
             "description": "Loaded with bell peppers, sweet corn, black olives, red onions, and mozzarella",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Vegetarian_Pizza.jpg",
             "created_at": datetime.now()
         },
         {
@@ -120,7 +169,7 @@ def seed_menu():
             "price": 399.0,
             "description": "Generous layers of cured spicy pepperoni and melted double mozzarella",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Pepperoni_pizza.jpg",
             "created_at": datetime.now()
         },
         {
@@ -129,7 +178,7 @@ def seed_menu():
             "price": 379.0,
             "description": "Tender grilled BBQ chicken chunks, caramelized red onions, cilantro, and smoked cheese",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/B.B.Q._Chicken_Pizza_%2826679384893%29.jpg",
             "created_at": datetime.now()
         },
 
@@ -140,7 +189,7 @@ def seed_menu():
             "price": 349.0,
             "description": "Dum-cooked fragrant basmati rice layered with succulent chicken, saffron, and fried onions",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Chicken_Biryani.jpg",
             "created_at": datetime.now()
         },
         {
@@ -149,7 +198,7 @@ def seed_menu():
             "price": 359.0,
             "description": "Tandoori chicken simmered in a velvety buttery tomato gravy enriched with cream",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/19/Butter-chicken.jpg",
             "created_at": datetime.now()
         },
         {
@@ -158,7 +207,7 @@ def seed_menu():
             "price": 279.0,
             "description": "Soft malai paneer cubes gently cooked in a rich, mild sweet creamy tomato gravy",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Paneer_Butter_Masala.jpg",
             "created_at": datetime.now()
         },
         {
@@ -167,7 +216,7 @@ def seed_menu():
             "price": 249.0,
             "description": "Black lentils slow simmered overnight with fresh butter, ginger, and aromatic spices",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Dal_Makhani.jpg",
             "created_at": datetime.now()
         },
         {
@@ -176,7 +225,7 @@ def seed_menu():
             "price": 219.0,
             "description": "Wok-tossed long grain rice with garden fresh vegetables in zesty Schezwan sauce",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Fried_rice.jpg",
             "created_at": datetime.now()
         },
         {
@@ -185,7 +234,7 @@ def seed_menu():
             "price": 369.0,
             "description": "Creamy arborio rice with porcini mushrooms, white truffle oil, and aged parmesan",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Mushroom_Risotto_%284789415965%29.jpg",
             "created_at": datetime.now()
         },
 
@@ -196,7 +245,7 @@ def seed_menu():
             "price": 99.0,
             "description": "Soft golden milk-solid dumplings soaked in rose and cardamom infused warm sugar syrup",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/56/Gulab_Jamun.jpg",
             "created_at": datetime.now()
         },
         {
@@ -205,7 +254,7 @@ def seed_menu():
             "price": 159.0,
             "description": "Warm Belgian chocolate brownie served with Madagascar vanilla gelato and hot fudge",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1564355808539-22fda35bed7e?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/68/Chocolatebrownie.JPG",
             "created_at": datetime.now()
         },
         {
@@ -214,7 +263,7 @@ def seed_menu():
             "price": 189.0,
             "description": "Espresso-soaked savoiardi ladyfingers layered with whipped mascarpone cream and cocoa",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Tiramisu_dessert.jpg",
             "created_at": datetime.now()
         },
         {
@@ -223,7 +272,7 @@ def seed_menu():
             "price": 129.0,
             "description": "Delicate cottage cheese patties soaked in thickened saffron cardamom milk with pistachios",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Ras-Malai.jpg",
             "created_at": datetime.now()
         },
 
@@ -234,7 +283,7 @@ def seed_menu():
             "price": 119.0,
             "description": "Velvety blend of ripe Alphonso mango pulp, churned yogurt, cardamom, and mint",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Mango_Lassi_.jpg",
             "created_at": datetime.now()
         },
         {
@@ -243,7 +292,7 @@ def seed_menu():
             "price": 139.0,
             "description": "Bold espresso shot blended with chilled whole milk, ice cream, and chocolate drizzle",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Ice_coffee_image.jpg",
             "created_at": datetime.now()
         },
         {
@@ -252,7 +301,7 @@ def seed_menu():
             "price": 89.0,
             "description": "Freshly squeezed lime juice with crushed mint leaves, rock salt, and effervescent soda",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Lime_Soda_preparation.jpg",
             "created_at": datetime.now()
         },
         {
@@ -261,7 +310,7 @@ def seed_menu():
             "price": 69.0,
             "description": "Authentic street-style brewed tea infused with ginger, cardamom, cinnamon, and whole milk",
             "is_available": True,
-            "image_url": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/04/Masala_Chai.JPG",
             "created_at": datetime.now()
         },
     ]
