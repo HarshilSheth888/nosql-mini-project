@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order._id|string|truncate(8, True, '') }} — FoodieSpot{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="text-center mb-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                <h2 class="mt-2 fw-bold">Order Confirmed!</h2>
+                <p class="text-muted">Your order has been placed successfully.</p>
+            </div>
+
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="fw-bold mb-1">Order Details</h5>
+                            <span class="text-muted small font-monospace">ID: {{ order._id }}</span>
+                        </div>
+                        <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+                    </div>
+                    <hr>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Customer:</strong> {{ order.customer_name }}</p>
+                            <p class="mb-1"><strong>Phone:</strong> {{ order.customer_phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if order.customer_address %}
+                            <p class="mb-1"><strong>Address:</strong> {{ order.customer_address }}</p>
+                            {% endif %}
+                            <p class="mb-1"><strong>Date:</strong> {{ order.ordered_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold mt-3">Items Ordered:</h6>
+                    <table class="table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if order['items'] is defined and order['items'] is iterable and order['items'] is not string and order['items'] is not mapping %}
+                                {% for item in order['items'] %}
+                                <tr>
+                                    <td>{{ item.name if item is mapping else item }}</td>
+                                    <td class="text-center">{{ item.quantity if item is mapping else 1 }}</td>
+                                    <td class="text-end">₹{{ "%.0f"|format(item.price) if item is mapping and item.price is defined else "0" }}</td>
+                                    <td class="text-end">₹{{ "%.0f"|format(item.subtotal) if item is mapping and item.subtotal is defined else "0" }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No items recorded</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold fs-5">Total:</td>
+                                <td class="text-end price-tag fs-5">₹{{ "%.0f"|format(order.total_amount) }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{{ url_for('index') }}" class="btn btn-orange px-4 me-2">
+                    <i class="bi bi-house"></i> Back to Menu
+                </a>
+                <a href="{{ url_for('place_order') }}" class="btn btn-outline-secondary px-4">
+                    <i class="bi bi-cart-plus"></i> New Order
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

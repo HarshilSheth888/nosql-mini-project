@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if item else 'Add' }} Menu Item — FoodieSpot{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-header bg-white" style="border-radius: 15px 15px 0 0;">
+                    <h4 class="mb-0">
+                        <i class="bi bi-{{ 'pencil' if item else 'plus-circle' }}"></i>
+                        {{ 'Edit' if item else 'Add New' }} Menu Item
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('edit_menu_item', item_id=item._id) if item else url_for('add_menu_item') }}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-bold">Item Name *</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   value="{{ item.name if item else '' }}" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="category" class="form-label fw-bold">Category *</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">-- Select --</option>
+                                    {% for cat in ['Starters', 'Main Course', 'Pizza', 'Desserts', 'Beverages', 'Sides'] %}
+                                    <option value="{{ cat }}" {{ 'selected' if item and item.category == cat else '' }}>{{ cat }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label fw-bold">Price (₹) *</label>
+                                <input type="number" class="form-control" id="price" name="price"
+                                       value="{{ item.price if item else '' }}" min="1" step="1" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-bold">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ item.description if item else '' }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image_url" class="form-label fw-bold">Image URL</label>
+                            <input type="url" class="form-control" id="image_url" name="image_url"
+                                   value="{{ item.image_url if item else '' }}" placeholder="https://example.com/image.jpg">
+                        </div>
+
+                        <div class="mb-4 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_available" name="is_available"
+                                   {{ 'checked' if (item and item.is_available) or not item else '' }}>
+                            <label class="form-check-label" for="is_available">Available for ordering</label>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-orange px-4">
+                                <i class="bi bi-check-lg"></i> {{ 'Update' if item else 'Add Item' }}
+                            </button>
+                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

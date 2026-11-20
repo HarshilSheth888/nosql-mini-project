@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block title %}Place Order — FoodieSpot Culinary Selection{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-item-row {
+        transition: all 0.2s ease;
+        border-radius: 14px;
+        padding: 12px 14px;
+        border: 1px solid transparent;
+    }
+    .order-item-row:hover {
+        background-color: #F8FAFC;
+        border-color: #E2E8F0;
+    }
+    .order-item-row.selected-item {
+        background: rgba(255, 94, 54, 0.04);
+        border-color: rgba(255, 94, 54, 0.25);
+    }
+    .form-check-input:checked {
+        background-color: var(--brand-primary);
+        border-color: var(--brand-primary);
+    }
+    .summary-sticky {
+        position: sticky;
+        top: 90px;
+    }
+    .order-summary-box {
+        background: #FFFFFF;
+        border-radius: 20px;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+        padding: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1"><i class="bi bi-cart3 text-danger me-2"></i> Create Your Order</h2>
+        <p class="text-muted">Select dishes from our handcrafted collection and configure portions.</p>
+    </div>
+
+    <form method="POST" id="orderForm">
+        <div class="row g-4">
+            <!-- Left: Customer Details & Sticky Summary -->
+            <div class="col-lg-4 order-lg-2">
+                <div class="summary-sticky">
+                    <!-- Customer Details Card -->
+                    <div class="order-summary-box mb-4">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-person-circle text-primary"></i> Guest Information
+                        </h5>
+                        <div class="mb-3">
+                            <label for="customer_name" class="form-label small fw-bold text-secondary">Full Name *</label>
+                            <input type="text" class="form-control rounded-3" id="customer_name" name="customer_name" placeholder="e.g. Rahul Sharma" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer_phone" class="form-label small fw-bold text-secondary">Phone Number *</label>
+                            <input type="tel" class="form-control rounded-3" id="customer_phone" name="customer_phone" placeholder="e.g. 9876543210" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="customer_address" class="form-label small fw-bold text-secondary">Delivery Address</label>
+                            <textarea class="form-control rounded-3" id="customer_address" name="customer_address" rows="2" placeholder="Street, Apartment, City"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Live Order Summary Box -->
+                    <div class="order-summary-box">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-receipt-cutoff text-warning"></i> Order Bill</span>
+                            <span class="badge bg-light text-muted border rounded-pill px-2 py-1 small" id="itemsCountBadge">0 items</span>
+                        </h5>
+                        <div id="orderSummary" class="text-muted small py-2" style="max-height: 220px; overflow-y: auto;">
+                            No delicacies selected yet. Check items from the menu on the left to add.
+                        </div>
+                        <hr class="my-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-bold text-secondary">Estimated Total</span>
+                            <span class="price-tag-modern" id="totalAmount"><span>₹</span>0</span>
+                        </div>
+                        <button type="submit" class="btn btn-brand-primary w-100 py-3 fs-6 rounded-4" id="submitBtn" disabled>
+                            <i class="bi bi-check-circle-fill"></i> Confirm & Place Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Menu Selection -->
+            <div class="col-lg-8 order-lg-1">
+                <div class="glass-card p-4">
+                    <h4 class="fw-bold mb-4 pb-2 border-bottom d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-menu-button-wide text-danger me-2"></i> Select Delicacies</span>
+                        <span class="small text-muted fw-normal">Tick checkbox & adjust quantities</span>
+                    </h4>
+
+                    {% set current_cat = {'value': ''} %}
+                    {% for item in menu_items %}
+                        {% if item.category != current_cat.value %}
+                            {% if current_cat.value %}
+                                </div></div>
+                            {% endif %}
+                            <div class="mb-4">
+                                <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+                                    <span class="category-badge-pill">{{ item.category }}</span>
+                                </h5>
+                                <div class="d-flex flex-column gap-2">
+                            {% if current_cat.update({'value': item.category}) %}{% endif %}
+                        {% endif %}
+
+                        <div class="order-item-row d-flex align-items-center justify-content-between" id="row_{{ item._id }}">
+                            <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                <div class="form-check m-0">
+                                    <input class="form-check-input item-checkbox" type="checkbox"
+                                           name="items" value="{{ item._id }}"
+                                           data-price="{{ item.price }}" data-name="{{ item.name }}"
+                                           id="item_{{ item._id }}" style="width: 1.3rem; height: 1.3rem; cursor: pointer;">
+                                </div>
+                                {% if item.image_url %}
+                                <img src="{{ item.image_url }}" alt="{{ item.name }}"
+                                     style="width: 58px; height: 58px; object-fit: cover; border-radius: 12px; border: 1px solid #E2E8F0;"
+                                     onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'">
+                                {% endif %}
+                                <div>
+                                    <label class="form-check-label fw-bold text-dark mb-1 d-block" for="item_{{ item._id }}" style="cursor: pointer;">
+                                        {{ item.name }}
+                                    </label>
+                                    <span class="small text-muted">{{ item.description[:70] }}...</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 ms-3">
+                                <div class="text-end">
+                                    <span class="fw-bold text-dark font-monospace fs-6">₹{{ "%.0f"|format(item.price) }}</span>
+                                </div>
+                                <div class="qty-wrapper" style="display: none;" id="qty_wrap_{{ item._id }}">
+                                    <input type="number" name="quantities" value="1" min="1" max="20"
+                                           class="form-control form-control-sm text-center fw-bold rounded-3 qty-input"
+                                           style="width: 65px; border-color: var(--brand-primary);"
+                                           data-for="{{ item._id }}">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% if menu_items %}
+                        </div></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    const totalDisplay = document.getElementById('totalAmount');
+    const summaryDisplay = document.getElementById('orderSummary');
+    const submitBtn = document.getElementById('submitBtn');
+    const countBadge = document.getElementById('itemsCountBadge');
+
+    function updateSummary() {
+        let total = 0;
+        let count = 0;
+        let summaryHtml = '<ul class="list-unstyled mb-0 d-flex flex-column gap-2">';
+
+        checkboxes.forEach(cb => {
+            const row = document.getElementById('row_' + cb.value);
+            const qtyWrap = document.getElementById('qty_wrap_' + cb.value);
+            const qtyInput = document.querySelector(`.qty-input[data-for="${cb.value}"]`);
+
+            if (cb.checked) {
+                row.classList.add('selected-item');
+                qtyWrap.style.display = 'block';
+                const qty = parseInt(qtyInput.value) || 1;
+                const price = parseFloat(cb.dataset.price);
+                const subtotal = price * qty;
+                total += subtotal;
+                count += qty;
+
+                summaryHtml += `
+                    <li class="d-flex justify-content-between align-items-center py-1 border-bottom-dashed">
+                        <div>
+                            <span class="fw-semibold text-dark">${cb.dataset.name}</span>
+                            <span class="text-muted small"> × ${qty}</span>
+                        </div>
+                        <span class="fw-bold text-dark font-monospace">₹${subtotal.toFixed(0)}</span>
+                    </li>
+                `;
+            } else {
+                row.classList.remove('selected-item');
+                qtyWrap.style.display = 'none';
+            }
+        });
+
+        summaryHtml += '</ul>';
+
+        if (count > 0) {
+            summaryDisplay.innerHTML = summaryHtml;
+            totalDisplay.innerHTML = `<span>₹</span>${total.toFixed(0)}`;
+            countBadge.textContent = `${count} item${count > 1 ? 's' : ''}`;
+            submitBtn.disabled = false;
+        } else {
+            summaryDisplay.innerHTML = '<span class="text-muted">No delicacies selected yet. Check items from the menu on the left to add.</span>';
+            totalDisplay.innerHTML = '<span>₹</span>0';
+            countBadge.textContent = '0 items';
+            submitBtn.disabled = true;
+        }
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updateSummary));
+    document.querySelectorAll('.qty-input').forEach(input => input.addEventListener('input', updateSummary));
+</script>
+{% endblock %}

@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — FoodieSpot Control Center{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card-modern {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 1.6rem;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card-modern:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px -5px rgba(15, 23, 42, 0.1);
+    }
+    .stat-icon-wrapper {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+    }
+    .stat-value {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.1;
+        color: #0F172A;
+    }
+    .stat-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .table-modern thead th {
+        background-color: #F8FAFC;
+        color: #475569;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 1rem 1.2rem;
+        border-bottom: 1px solid #E2E8F0;
+    }
+    .table-modern tbody td {
+        padding: 1.1rem 1.2rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #F1F5F9;
+        font-size: 0.92rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-danger me-2"></i> Restaurant Operations Center</h2>
+            <p class="text-muted mb-0 small">Real-time telemetry, menu management, and order fulfillment</p>
+        </div>
+        <div class="mt-2 mt-md-0 d-flex gap-2">
+            <a href="{{ url_for('add_menu_item') }}" class="btn btn-brand-primary">
+                <i class="bi bi-plus-lg"></i> Add Menu Item
+            </a>
+            <a href="{{ url_for('list_customers') }}" class="btn btn-brand-secondary">
+                <i class="bi bi-people-fill"></i> Customers
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Overview Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card-modern">
+                <div class="stat-icon-wrapper" style="background: rgba(255, 94, 54, 0.12); color: var(--brand-primary);">
+                    <i class="bi bi-journal-richtext"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ stats.total_items }}</div>
+                    <div class="stat-label">Total Menu Items</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card-modern">
+                <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.12); color: #3B82F6;">
+                    <i class="bi bi-bag-check-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ stats.total_orders }}</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card-modern">
+                <div class="stat-icon-wrapper" style="background: rgba(16, 185, 129, 0.12); color: #10B981;">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ stats.total_customers }}</div>
+                    <div class="stat-label">Happy Guests</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card-modern">
+                <div class="stat-icon-wrapper" style="background: rgba(245, 158, 11, 0.15); color: #D97706;">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ stats.pending_orders }}</div>
+                    <div class="stat-label">Pending Orders</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Catalog Table -->
+    <div class="glass-card mb-5 overflow-hidden">
+        <div class="p-4 d-flex justify-content-between align-items-center bg-white border-bottom">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-card-checklist text-primary me-2"></i> Menu Inventory Catalog</h4>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill font-monospace">{{ menu_items|length }} Registered</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-modern table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Item Details</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Availability</th>
+                        <th class="text-end">Quick Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in menu_items %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                {% if item.image_url %}
+                                <img src="{{ item.image_url }}" alt="{{ item.name }}"
+                                     style="width: 46px; height: 46px; object-fit: cover; border-radius: 10px; border: 1px solid #E2E8F0;"
+                                     onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'">
+                                {% else %}
+                                <div style="width: 46px; height: 46px; border-radius: 10px; background: #E2E8F0; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-cup-hot text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-bold text-dark">{{ item.name }}</div>
+                                    <div class="text-muted small" style="max-width: 280px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ item.description }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="category-badge-pill">{{ item.category }}</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6 text-dark font-monospace">₹{{ "%.0f"|format(item.price) }}</span>
+                        </td>
+                        <td>
+                            {% if item.is_available %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">Available</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-1">Unavailable</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a href="{{ url_for('view_menu_item', item_id=item._id) }}" class="btn btn-sm btn-outline-secondary" title="View details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ url_for('edit_menu_item', item_id=item._id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form action="{{ url_for('delete_menu_item', item_id=item._id) }}" method="POST" class="d-inline"
+                                      onsubmit="return confirm('Permanently delete {{ item.name }}?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="glass-card overflow-hidden">
+        <div class="p-4 bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-receipt text-warning me-2"></i> Recent Order Activity</h4>
+            <span class="small text-muted">Latest 20 orders</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-modern table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Order Identifier</th>
+                        <th>Customer</th>
+                        <th>Dishes</th>
+                        <th>Total</th>
+                        <th>Fulfillment</th>
+                        <th>Placed At</th>
+                        <th class="text-end">Manage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td class="font-monospace small text-primary fw-semibold">
+                            #{{ order._id|string|truncate(10, True, '') }}
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ order.customer_name }}</div>
+                            <div class="text-muted small">{{ order.customer_phone }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border px-2 py-1 rounded-pill">
+                                {% if order['items'] is defined and order['items'] is iterable and order['items'] is not string and order['items'] is not mapping %}
+                                    {{ order['items']|length }} item(s)
+                                {% elif order['items'] is defined and order['items'] %}
+                                    1 item(s)
+                                {% else %}
+                                    0 item(s)
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6 font-monospace text-dark">₹{{ "%.0f"|format(order.total_amount) }}</span>
+                        </td>
+                        <td>
+                            <span class="status-badge-custom status-{{ order.status }}">{{ order.status }}</span>
+                        </td>
+                        <td class="small text-muted">
+                            {{ order.ordered_at.strftime('%d %b, %I:%M %p') }}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a href="{{ url_for('order_confirmation', order_id=order._id) }}" class="btn btn-sm btn-outline-secondary" title="View Order">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <div class="dropdown d-inline">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Change status">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                                        <li><h6 class="dropdown-header">Update Status</h6></li>
+                                        {% for status in ['Pending', 'Preparing', 'Ready', 'Delivered', 'Cancelled'] %}
+                                        <li>
+                                            <form action="{{ url_for('update_order_status', order_id=order._id) }}" method="POST">
+                                                <input type="hidden" name="status" value="{{ status }}">
+                                                <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
+                                                    <span class="status-badge-custom status-{{ status }}" style="font-size: 0.72rem; padding: 2px 8px;">{{ status }}</span>
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <form action="{{ url_for('delete_order', order_id=order._id) }}" method="POST" class="d-inline"
+                                      onsubmit="return confirm('Delete order #{{ order._id }}?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not orders %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox fs-2 text-secondary d-block mb-2"></i>
+                            No orders placed yet.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
