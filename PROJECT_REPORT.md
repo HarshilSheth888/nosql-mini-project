@@ -9,43 +9,39 @@
 
 **Prepared and Submitted by:**
 
-| USN | NAME IN CAPITAL | SIGNATURE |
-| :--- | :--- | :--- |
-| [YOUR USN 1] | [STUDENT NAME 1] | _____________ |
-| [YOUR USN 2] | [STUDENT NAME 2] | _____________ |
-| [YOUR USN 3] | [STUDENT NAME 3] | _____________ |
+| USN | NAME |
+| :--- | :--- |
+| 25MCAR0225 | HARSHIL SHETH |
 
-**Date of Submission:** ____________________  
-**Faculty Signature:** ____________________  
 
 ---
 
 ## TABLE OF CONTENTS
 
-| Sl. No. | Content | Page No |
-| :--- | :--- | :--- |
-| **1** | **Introduction** | |
-| | 1.1 Purpose of the Project | |
-| | 1.2 Target Audience | |
-| **2** | **Concept and Objectives** | |
-| | 2.1 Problem Statement | |
-| | 2.2 Objectives | |
-| **3** | **System Requirements** | |
-| | 3.1 Software Requirements | |
-| | 3.2 Hardware Requirements | |
-| | 3.3 Dependencies and Tools | |
-| **4** | **Implementation Details** | |
-| | 4.1 Schema | |
-| | 4.2 MongoDB Queries | |
+| Sl. No. | Content |
+| :--- | :--- |
+| **1** | **Introduction** |
+| | 1.1 Purpose of the Project |
+| | 1.2 Target Audience |
+| **2** | **Concept and Objectives** |
+| | 2.1 Problem Statement |
+| | 2.2 Objectives |
+| **3** | **System Requirements** |
+| | 3.1 Software Requirements |
+| | 3.2 Hardware Requirements |
+| | 3.3 Dependencies and Tools |
+| **4** | **Implementation Details** |
+| | 4.1 Schema |
+| | 4.2 MongoDB Queries |
 | | 4.3 Screenshots | |
-| **5** | **Challenges and Solutions** | |
-| | 5.1 Technical Challenges | |
-| | 5.2 Design Challenges | |
-| | 5.3 How Issues Were Resolved | |
-| **6** | **Conclusion** | |
-| **7** | **References** | |
-| | 7.1 Book References | |
-| | 7.2 Web References | |
+| **5** | **Challenges and Solutions** |
+| | 5.1 Technical Challenges |
+| | 5.2 Design Challenges |
+| | 5.3 How Issues Were Resolved |
+| **6** | **Conclusion** |
+| **7** | **References** |
+| | 7.1 Book References |
+| | 7.2 Web References |
 
 ---
 
